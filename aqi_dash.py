@@ -6,7 +6,6 @@ import plotly.express as px
 from datetime import datetime, timedelta
 import random
 
-# Page configuration
 st.set_page_config(
     page_title="Air Quality Intelligence Platform",
     page_icon="🌍",
@@ -14,7 +13,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
 st.markdown("""
 <style>
     .main {
@@ -42,9 +40,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Global cities database with flags (country codes for emoji flags)
 GLOBAL_CITIES = {
-    # Asia
     'Delhi': {'country': 'India', 'flag': '🇮🇳', 'base_aqi': 312, 'lat': 28.6139, 'lon': 77.2090},
     'Mumbai': {'country': 'India', 'flag': '🇮🇳', 'base_aqi': 158, 'lat': 19.0760, 'lon': 72.8777},
     'Bangalore': {'country': 'India', 'flag': '🇮🇳', 'base_aqi': 89, 'lat': 12.9716, 'lon': 77.5946},
@@ -59,7 +55,6 @@ GLOBAL_CITIES = {
     'Singapore': {'country': 'Singapore', 'flag': '🇸🇬', 'base_aqi': 52, 'lat': 1.3521, 'lon': 103.8198},
     'Dubai': {'country': 'UAE', 'flag': '🇦🇪', 'base_aqi': 95, 'lat': 25.2048, 'lon': 55.2708},
     
-    # Europe
     'London': {'country': 'United Kingdom', 'flag': '🇬🇧', 'base_aqi': 58, 'lat': 51.5074, 'lon': -0.1278},
     'Paris': {'country': 'France', 'flag': '🇫🇷', 'base_aqi': 62, 'lat': 48.8566, 'lon': 2.3522},
     'Berlin': {'country': 'Germany', 'flag': '🇩🇪', 'base_aqi': 48, 'lat': 52.5200, 'lon': 13.4050},
@@ -68,7 +63,6 @@ GLOBAL_CITIES = {
     'Amsterdam': {'country': 'Netherlands', 'flag': '🇳🇱', 'base_aqi': 42, 'lat': 52.3676, 'lon': 4.9041},
     'Moscow': {'country': 'Russia', 'flag': '🇷🇺', 'base_aqi': 89, 'lat': 55.7558, 'lon': 37.6173},
     
-    # Americas
     'New York': {'country': 'United States', 'flag': '🇺🇸', 'base_aqi': 54, 'lat': 40.7128, 'lon': -74.0060},
     'Los Angeles': {'country': 'United States', 'flag': '🇺🇸', 'base_aqi': 87, 'lat': 34.0522, 'lon': -118.2437},
     'Chicago': {'country': 'United States', 'flag': '🇺🇸', 'base_aqi': 51, 'lat': 41.8781, 'lon': -87.6298},
@@ -77,7 +71,6 @@ GLOBAL_CITIES = {
     'São Paulo': {'country': 'Brazil', 'flag': '🇧🇷', 'base_aqi': 76, 'lat': -23.5505, 'lon': -46.6333},
     'Buenos Aires': {'country': 'Argentina', 'flag': '🇦🇷', 'base_aqi': 63, 'lat': -34.6037, 'lon': -58.3816},
     
-    # Africa & Oceania
     'Cairo': {'country': 'Egypt', 'flag': '🇪🇬', 'base_aqi': 168, 'lat': 30.0444, 'lon': 31.2357},
     'Lagos': {'country': 'Nigeria', 'flag': '🇳🇬', 'base_aqi': 145, 'lat': 6.5244, 'lon': 3.3792},
     'Sydney': {'country': 'Australia', 'flag': '🇦🇺', 'base_aqi': 35, 'lat': -33.8688, 'lon': 151.2093},
@@ -112,19 +105,17 @@ def generate_24h_data(city_name):
     o3_values = []
     
     for hour in range(24):
-        # Traffic pattern simulation
-        if 7 <= hour <= 10:  # Morning rush
+        if 7 <= hour <= 10:  
             multiplier = 1.3
-        elif 18 <= hour <= 21:  # Evening rush
+        elif 18 <= hour <= 21: 
             multiplier = 1.15
-        elif 23 <= hour or hour <= 5:  # Night reduction
+        elif 23 <= hour or hour <= 5: 
             multiplier = 0.7
-        elif 13 <= hour <= 16:  # Afternoon dip
+        elif 13 <= hour <= 16: 
             multiplier = 0.85
         else:
             multiplier = 1.0
-        
-        # Add random variation
+    
         variation = random.uniform(0.92, 1.08)
         aqi = int(base_aqi * multiplier * variation)
         
@@ -160,8 +151,7 @@ def generate_monthly_data(cities):
         data[city] = [int(base_aqi * random.uniform(0.85, 1.15)) for _ in range(30)]
     
     return pd.DataFrame(data)
-
-# Header
+    
 col1, col2 = st.columns([3, 1])
 with col1:
     st.markdown("# 🌍 Air Quality Intelligence Platform")
@@ -173,7 +163,6 @@ with col2:
 
 st.markdown("---")
 
-# Sidebar for city search
 with st.sidebar:
     st.markdown("## 🔍 Search Global Cities")
     st.markdown('<div class="city-search">', unsafe_allow_html=True)
@@ -210,7 +199,6 @@ with st.sidebar:
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("---")
     
-    # Main city selector
     st.markdown("## 🏙️ Select Primary City")
     selected_city = st.selectbox(
         "Choose a city for detailed analysis:",
@@ -235,13 +223,11 @@ with st.sidebar:
     - Real-time API integration
     """)
 
-# Generate data for selected city
 df_24h = generate_24h_data(selected_city)
 current_hour = datetime.now().hour
 current_aqi = df_24h.iloc[current_hour]['AQI']
 status, color, description = get_aqi_status(current_aqi)
 
-# Key Metrics
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
@@ -285,7 +271,6 @@ with col4:
 
 st.markdown("---")
 
-# Main visualizations
 tab1, tab2, tab3, tab4 = st.tabs([
     "📈 24-Hour Trend", 
     "🎯 Pollutant Analysis", 
@@ -322,7 +307,6 @@ with tab1:
     with col2:
         st.markdown("### AQI Distribution")
         
-        # Calculate category distribution
         categories = []
         for aqi in df_24h['AQI']:
             status, _, _ = get_aqi_status(aqi)
@@ -353,7 +337,6 @@ with tab1:
         )
         st.plotly_chart(fig, use_container_width=True)
     
-    # Key insights
     col1, col2, col3 = st.columns(3)
     with col1:
         st.info("🌅 **Morning Peak**: 07:00 - 10:00 AM\nTraffic congestion causes +30% spike")
@@ -400,7 +383,6 @@ with tab2:
         )
         st.plotly_chart(fig, use_container_width=True)
         
-        # Pollutant details
         col_a, col_b, col_c = st.columns(3)
         with col_a:
             st.metric("PM2.5", f"{df_24h.iloc[current_hour]['PM2.5']} µg/m³")
@@ -439,7 +421,6 @@ with tab2:
 with tab3:
     st.markdown("### Global City Comparison")
     
-    # Create comparison dataframe
     comparison_cities = ['Delhi', 'Mumbai', 'Beijing', 'London', 'New York', 
                         'Tokyo', 'Sydney', 'Paris', 'Dubai', 'Singapore']
     
@@ -457,7 +438,6 @@ with tab3:
     
     df_comparison = pd.DataFrame(comparison_data).sort_values('AQI', ascending=False)
     
-    # Bar chart
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=df_comparison['City'],
@@ -481,7 +461,6 @@ with tab3:
     )
     st.plotly_chart(fig, use_container_width=True)
     
-    # Statistics
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         worst_city = df_comparison.iloc[0]
@@ -525,7 +504,6 @@ with tab4:
     )
     st.plotly_chart(fig, use_container_width=True)
     
-    # Monthly statistics
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Highest Peak", f"{df_monthly[historical_cities].max().max()}", 
@@ -539,12 +517,10 @@ with tab4:
     with col4:
         st.metric("Seasonal Factor", "+40%", "Winter Impact")
 
-# Delhi Hotspot Map & Health Recommendations Section
 if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyderabad']:
     st.markdown("---")
     st.markdown(f"## 🗺️ {selected_city} AQI Hotspot Map & Health Advisory")
     
-    # Define hotspot locations for Indian cities
     if selected_city == 'Delhi':
         hotspots = [
             {'name': 'Anand Vihar', 'lat': 28.6469, 'lon': 77.3162, 'aqi': 425, 'zone': 'Traffic Hub'},
@@ -596,7 +572,7 @@ if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyde
             {'name': 'Marina Beach', 'lat': 13.0499, 'lon': 80.2824, 'aqi': 78, 'zone': 'Coastal'},
         ]
         center_lat, center_lon = 13.0827, 80.2707
-    else:  # Hyderabad
+    else: 
         hotspots = [
             {'name': 'Charminar', 'lat': 17.3616, 'lon': 78.4747, 'aqi': 145, 'zone': 'Commercial'},
             {'name': 'Hitec City', 'lat': 17.4435, 'lon': 78.3772, 'aqi': 128, 'zone': 'IT Hub'},
@@ -609,14 +585,11 @@ if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyde
     col1, col2 = st.columns([3, 1])
     
     with col1:
-        # Create the map
         fig_map = go.Figure()
         
-        # Add hotspot markers
         for hotspot in hotspots:
             status, color, _ = get_aqi_status(hotspot['aqi'])
-            
-            # Size based on AQI severity
+                                              
             size = 15 + (hotspot['aqi'] / 20)
             
             fig_map.add_trace(go.Scattermapbox(
@@ -637,8 +610,6 @@ if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyde
                              "<extra></extra>",
                 name=hotspot['name']
             ))
-        
-        # Update map layout
         fig_map.update_layout(
             mapbox=dict(
                 style="carto-darkmatter",
@@ -652,8 +623,6 @@ if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyde
         )
         
         st.plotly_chart(fig_map, use_container_width=True)
-        
-        # Legend
         st.markdown("#### 🎨 AQI Color Legend")
         col_a, col_b, col_c, col_d, col_e = st.columns(5)
         with col_a:
@@ -670,12 +639,10 @@ if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyde
     with col2:
         st.markdown("### 😷 Mask Recommendations")
         
-        # Get worst hotspot
         worst_hotspot = max(hotspots, key=lambda x: x['aqi'])
         worst_aqi = worst_hotspot['aqi']
         worst_status, worst_color, _ = get_aqi_status(worst_aqi)
         
-        # Mask recommendations based on AQI
         if worst_aqi > 300:
             mask_type = "N99/P100 Respirator"
             mask_emoji = "😷🔴"
@@ -724,7 +691,6 @@ if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyde
         </div>
         """, unsafe_allow_html=True)
         
-        # Health advisory
         st.markdown("### 🏥 Health Advisory")
         
         if worst_aqi > 300:
@@ -756,8 +722,7 @@ if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyde
             - Normal outdoor activities OK
             - No special precautions needed
             """)
-        
-        # Top 3 hotspots
+
         st.markdown("### 🔥 Top 3 Hotspots")
         sorted_hotspots = sorted(hotspots, key=lambda x: x['aqi'], reverse=True)[:3]
         
@@ -779,7 +744,6 @@ if selected_city in ['Delhi', 'Mumbai', 'Kolkata', 'Bangalore', 'Chennai', 'Hyde
             </div>
             """, unsafe_allow_html=True)
 
-# Footer
 st.markdown("---")
 col1, col2, col3 = st.columns(3)
 
